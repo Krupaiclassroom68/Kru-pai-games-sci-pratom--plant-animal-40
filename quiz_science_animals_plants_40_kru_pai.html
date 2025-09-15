@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>วิทยาศาสตร์ ม.1 — พืชและสัตว์ 40 ข้อ | Kru Pai Classroom</title>
+<style>
+  :root{
+    --primary:#0ea5e9; /* sky */
+    --accent:#f59e0b;  /* amber */
+    --bg:#f8fafc;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --success:#16a34a;
+    --danger:#dc2626;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;background:var(--bg);color:var(--ink)}
+  header{position:sticky;top:0;background:white;border-bottom:1px solid #e5e7eb;padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:10}
+  header .badge{background:var(--primary);color:white;padding:6px 10px;border-radius:999px;font-weight:700}
+  header h1{font-size:16px;margin:0;line-height:1.2}
+  main{max-width:980px;margin:0 auto;padding:16px}
+  .card{background:white;border:1px solid #e5e7eb;border-radius:18px;box-shadow:0 6px 24px rgba(2,8,23,.06)}
+  .cover{padding:32px;text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center;justify-content:center;min-height:72vh}
+  .cover h2{font-size:28px;margin:0}
+  .cover p{color:var(--muted);margin:0}
+  .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  input[type=text]{font-size:18px;padding:12px 14px;border-radius:12px;border:1px solid #cbd5e1;min-width:260px}
+  button{font-size:18px;padding:12px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:700}
+  .btn{background:var(--primary);color:white}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-outline{background:white;border:2px solid var(--primary);color:var(--primary)}
+  .quiz{padding:18px 18px 8px}
+  .q{border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin:12px 0}
+  .q h3{margin:0 0 12px 0;font-size:18px}
+  .choices{display:grid;gap:10px}
+  .choice{border:2px solid #cbd5e1;border-radius:12px;padding:12px 14px;font-size:18px;text-align:left;cursor:pointer;background:#f9fafb}
+  .choice:hover{border-color:var(--primary)}
+  .choice.selected{border-color:var(--accent);background:#fffbeb}
+  .footer{display:flex;justify-content:space-between;align-items:center;padding:12px}
+  .pill{padding:6px 10px;border-radius:999px;background:#f1f5f9;color:#0f172a;font-weight:600}
+  .result{padding:28px;text-align:center}
+  .big{font-size:48px;font-weight:900;margin:0}
+  .pass{color:var(--success)}
+  .fail{color:var(--danger)}
+  .explain{margin-top:8px;color:#334155;font-size:14px}
+  .brand{font-weight:900;letter-spacing:.3px}
+  @media (max-width:640px){
+    .big{font-size:40px}
+    .choice{font-size:17px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <span class="badge">Kru Pai Classroom</span>
+  <h1>วิทยาศาสตร์ ม.1 — พืชและสัตว์ • 40 ข้อ</h1>
+</header>
+
+<main>
+  <section id="welcome" class="card cover">
+    <h2>แบบทดสอบรวม: พืช & สัตว์ (รีเรียงใหม่)</h2>
+    <p>กรอกชื่อเพื่อเริ่มทำแบบทดสอบ <b>40 ข้อ</b> • ผ่านเกณฑ์ <b>80%</b></p>
+    <div class="row">
+      <input id="playerName" type="text" placeholder="พิมพ์ชื่อของหนูที่นี่">
+      <button class="btn" onclick="startQuiz()">เริ่มทำแบบทดสอบ</button>
+    </div>
+    <p class="brand">© Kru Pai Classroom</p>
+  </section>
+
+  <section id="quizBox" class="card quiz" style="display:none"></section>
+  <section id="resultBox" class="card result" style="display:none"></section>
+</main>
+
+<script>
+// 40 questions (removed: ม้าน้ำ/ไดโคโตมัสคีย์)
+const QUESTIONS=[
+  {t:"ข้อใดไม่ใช่ลักษณะเฉพาะของสัตว์ครึ่งบกครึ่งน้ำ",c:["ลำตัวไม่มีเกล็ดปกคลุม","ตัวโตเต็มวัยหายใจด้วยปอดและผิวหนัง","วางไข่บนบก","คางคกจัดเป็นสัตว์ครึ่งบกครึ่งน้ำ"],a:2,e:"ส่วนใหญ่วางไข่ในน้ำหรือที่ชื้น ไม่ใช่บนบก"},
+  {t:"ข้อใดเป็นลักษณะของสัตว์เลื้อยคลาน",c:["หายใจด้วยเหงือก","เป็นสัตว์เลือดเย็น","มีขาหลายกว่าขาหน้า","ผิวหนังเปียกชื้นอยู่เสมอ"],a:1,e:"สัตว์เลื้อยคลานเป็นสัตว์เลือดเย็น มีปอดและผิวแห้งมีเกล็ด"},
+  {t:"สัตว์เลือดอุ่นหมายถึงข้อใด",c:["รักษาอุณหภูมิร่างกายคงที่ได้","อาศัยในที่ร้อนเท่านั้น","เลือดมีสีแดงเข้ม","ต้องอาศัยน้ำตลอดเวลา"],a:0,e:"นกและสัตว์เลี้ยงลูกด้วยน้ำนมเป็นสัตว์เลือดอุ่น"},
+  {t:"แมลงกับแมงมุมต่างกันเด่นที่สุดที่จำนวนขา ข้อใดถูก",c:["แมลง 8 ขา แมงมุม 6 ขา","แมลง 6 ขา แมงมุม 8 ขา","ทั้งคู่มี 6 ขา","ทั้งคู่มี 8 ขา"],a:1,e:"แมลง 3 คู่ = 6 ขา, แมงมุม 4 คู่ = 8 ขา"},
+  {t:"สิ่งมีชีวิตใดที่ไม่สามารถสร้างอาหารเองได้ และเคลื่อนที่ไม่ได้",c:["เห็ด","กุหลาบ","เฟิน","ยางพารา"],a:0,e:"เห็ดเป็นรา ได้อาหารจากการย่อยสลาย ไม่เคลื่อนที่"},
+  {t:"ข้อใดกล่าวถูกเกี่ยวกับเมล็ดพืชงอกเป็นต้นใหม่",c:["ต้องมีน้ำเพียงอย่างเดียว","ต้องมีน้ำ อากาศ และอุณหภูมิพอเหมาะ","ต้องมีแสงมาก","ไม่ต้องการอากาศ"],a:1,e:"เงื่อนไขสำคัญ: น้ำ + ออกซิเจน + อุณหภูมิพอเหมาะ"},
+  {t:"ส่วนใดของพืชทำหน้าที่สังเคราะห์ด้วยแสงมากที่สุด",c:["ราก","ลำต้น","ใบ","ดอก"],a:2,e:"ใบมีคลอโรพลาสต์หนาแน่น"},
+  {t:"ส่วนใดของพืชทำหน้าที่ดูดซึมน้ำและแร่ธาตุ",c:["ราก","ลำต้น","ใบ","ดอก"],a:0,e:"รากและขนรากดูดน้ำและแร่ธาตุจากดิน"},
+  {t:"การทดสอบแป้งในใบ ใช้สารใด",c:["ไอโอดีน","เบเนดิกต์","ไบยูเรต","คอปเปอร์ซัลเฟต"],a:0,e:"ไอโอดีนให้สีน้ำเงิน–ดำเมื่อมีแป้ง"},
+  {t:"ปัจจัยใดทำให้การคายน้ำเพิ่มขึ้น",c:["อุณหภูมิและความชื้นต่ำ","อุณหภูมิสูง ความชื้นต่ำ","อุณหภูมิต่ำ ความชื้นสูง","อุณหภูมิสูง ความชื้นสูง"],a:1,e:"อากาศร้อนและแห้งเร่งการคายน้ำ"},
+  {t:"ไซเล็ม (Xylem) มีหน้าที่",c:["ลำเลียงอาหาร","ลำเลียงน้ำและแร่ธาตุ","สะสมอาหาร","สังเคราะห์ด้วยแสง"],a:1,e:"ไซเล็มลำเลียงน้ำ/แร่ธาตุจากรากสู่ใบ"},
+  {t:"โฟลเอ็ม (Phloem) มีหน้าที่",c:["ลำเลียงอาหารจากใบไปส่วนต่าง ๆ","ลำเลียงน้ำจากราก","สร้างอาหาร","ยึดลำต้น"],a:0,e:"โฟลเอ็มลำเลียงสารอาหารที่สังเคราะห์แล้ว"},
+  {t:"ผลิตภัณฑ์หลักของสังเคราะห์ด้วยแสงคือ",c:["แป้งและออกซิเจน","น้ำตาลกลูโคสและออกซิเจน","คาร์บอนไดออกไซด์และน้ำ","โปรตีนและน้ำ"],a:1,e:"น้ำตาลกลูโคส + O₂ เป็นผลผลิตหลัก"},
+  {t:"สารตั้งต้นของสังเคราะห์ด้วยแสงที่พืชต้องใช้คือ",c:["คาร์บอนไดออกไซด์และน้ำ","ออกซิเจนและน้ำ","ไนโตรเจนและน้ำ","คาร์บอนไดออกไซด์และออกซิเจน"],a:0,e:"CO₂ จากอากาศและ H₂O จากราก"},
+  {t:"ช่องปากใบ (stomata) ทำหน้าที่หลัก",c:["ดูดน้ำจากดิน","แลกเปลี่ยนก๊าซและคายน้ำ","สร้างคลอโรฟิลล์","ยึดใบกับลำต้น"],a:1,e:"ปากใบเปิด–ปิดควบคุมการแลกเปลี่ยนก๊าซ/คายน้ำ"},
+  {t:"ธาตุอาหารหลักของพืช (NPK) คือข้อใด",c:["ไนโตรเจน ฟอสฟอรัส โพแทสเซียม","แคลเซียม ฟลูออรีน โซเดียม","ไฮโดรเจน ออกซิเจน ไนโตรเจน","แมกนีเซียม กำมะถัน เหล็ก"],a:0,e:"เรียกสั้น ๆ ว่า N-P-K"},
+  {t:"ข้อใดคือสิ่งมีชีวิตเซลล์เดียว",c:["ยีสต์/แบคทีเรีย","เห็ดฟาง","ไส้เดือน","กุ้ง"],a:0,e:"ยีสต์และแบคทีเรียเป็นสิ่งมีชีวิตเซลล์เดียว"},
+  {t:"แบคทีเรียจัดอยู่ในกลุ่มใด",c:["พืช","สัตว์","ไม่จัดอยู่ทั้งพืชและสัตว์","ไวรัส"],a:2,e:"อยู่โดเมนแบคทีเรีย (Prokaryote) แยกจากพืช/สัตว์"},
+  {t:"สัตว์เลี้ยงลูกด้วยน้ำนมมีลักษณะเด่นคือ",c:["มีปีกบินได้","ออกลูกเป็นไข่เสมอ","มีต่อมน้ำนมเลี้ยงลูก","มีเหงือกหายใจ"],a:2,e:"ต่อมน้ำนมและขนเป็นลักษณะเด่น"},
+  {t:"ข้อใดไม่ใช่สัตว์มีกระดูกสันหลัง",c:["ปลา","ดาวทะเล","นก","สัตว์เลื้อยคลาน"],a:1,e:"ดาวทะเลเป็นเอคไคโนเดิร์ม ไม่มีกระดูกสันหลัง"},
+  {t:"สัตว์ครึ่งบกครึ่งน้ำส่วนใหญ่มีวงจรชีวิตแบบใด",c:["ไข่→ลูกอ่อนอยู่บก→ตัวเต็มวัยน้ำ","ไข่→ลูกอ่อนน้ำ→ตัวเต็มวัยบก/น้ำ","ไข่→ตัวอ่อนบินได้→ตัวเต็มวัย","ตัวเต็มวัยเท่านั้น"],a:1,e:"ลูกอ่อนมักอาศัยน้ำ ใช้เหงือกหายใจ"},
+  {t:"ข้อใดเป็นตัวอย่างพืชใบเลี้ยงเดี่ยว",c:["ถั่วเหลือง","กล้วยไม้","ฝ้าย","งา"],a:1,e:"ใบเลี้ยงเดี่ยวเส้นใบขนาน เช่น ข้าว ข้าวโพด กล้วยไม้"},
+  {t:"ข้อใดเป็นตัวอย่างพืชใบเลี้ยงคู่",c:["มะเขือเทศ","ข้าว","อ้อย","ข้าวสาลี"],a:0,e:"ใบเลี้ยงคู่เส้นใบเป็นร่างแห เช่น ถั่ว มะเขือ"},
+  {t:"เส้นใบบริเวณใบของใบเลี้ยงเดี่ยวมีลักษณะ",c:["เป็นร่างแหถี่","ขนานกัน","ไม่มีเส้นใบ","วนเป็นวง"],a:1,e:"เส้นใบขนานเป็นเอกลักษณ์ของใบเลี้ยงเดี่ยว"},
+  {t:"การผสมเกสรตนเอง (self-pollination) มักทำให้เกิดผลอย่างไร",c:["เพิ่มความหลากหลายทางพันธุกรรมมาก","คงลักษณะเดิมของสายพันธุ์มากขึ้น","ไม่เกิดผล","ทำให้เมล็ดเล็กลงเสมอ"],a:1,e:"ผสมตนเองลดการผสมข้าม ทำให้ลักษณะคงเดิม"},
+  {t:"การผสมเกสรแบบข้าม (cross-pollination) ส่งผลอย่างไร",c:["ความหลากหลายทางพันธุกรรมเพิ่มขึ้น","ลดการงอกของเมล็ด","ทำให้พืชตาย","ไม่เกี่ยวกับพันธุกรรม"],a:0,e:"ผสมข้ามเพิ่มความหลากหลายทางพันธุกรรม"},
+  {t:"ผล (fruit) โดยทั่วไปเกิดจากส่วนใดของดอก",c:["กลีบดอก","เกสรเพศผู้","รังไข่","ก้านชูอับเรณู"],a:2,e:"รังไข่พัฒนาเป็นผล ออวุลเป็นเมล็ด"},
+  {t:"เมล็ด (seed) เกิดจากส่วนใดหลังการปฏิสนธิ",c:["กลีบเลี้ยง","ออวุล","ก้านดอก","กลีบดอก"],a:1,e:"ออวุลพัฒนาเป็นเมล็ด"},
+  {t:"ข้อใดกล่าวไม่ถูกต้องเกี่ยวกับกลีบเลี้ยง/กลีบดอก",c:["กลีบเลี้ยงอยู่รอบนอกสุดของดอก","กลีบดอกมีสีสันล่อแมลง","กลีบเลี้ยงทำหน้าที่สร้างอาหารหลัก","กลีบดอกช่วยป้องกันดอกอ่อน"],a:2,e:"หน้าที่สร้างอาหารหลักเป็นของใบ"},
+  {t:"อวัยวะใดของดอกทำหน้าที่สร้างอับเรณู (เกสรเพศผู้)",c:["ก้านชูอับเรณู","ยอดเกสรเพศเมีย","รังไข่","กลีบเลี้ยง"],a:0,e:"ก้านชูอับเรณูปลายสุดมีอับเรณู"},
+  {t:"อวัยวะใดของดอกเป็นที่อยู่ของออวุล",c:["ยอดเกสรเพศเมีย","รังไข่","ก้านดอก","ก้านชูอับเรณู"],a:1,e:"ออวุลอยู่ภายในรังไข่"},
+  {t:"พืชชนิดใดใช้ลำต้นสะสมอาหาร",c:["มันฝรั่ง","มันเทศ","แครอท","หัวบุก"],a:0,e:"หัวมันฝรั่งเป็นลำต้นใต้ดิน (tuber)"},
+  {t:"พืชชนิดใดใช้รากสะสมอาหาร",c:["มันเทศ","อ้อย","กล้วยไม้","สาหร่าย"],a:0,e:"มันเทศ/แครอทเป็นรากสะสมอาหาร"},
+  {t:"ข้อใดคือปัจจัยที่มีผลต่ออัตราการหายใจของสิ่งมีชีวิต",c:["อุณหภูมิ","ปริมาณน้ำ","ปริมาณออกซิเจน","ถูกทุกข้อ"],a:3,e:"หลายปัจจัยส่งผลต่อการหายใจ"},
+  {t:"สิ่งมีชีวิตข้อใดจัดเป็นผู้ผลิต (producer)",c:["เห็ด","แบคทีเรีย","เฟิน","ไส้เดือน"],a:2,e:"พืชและสาหร่ายสังเคราะห์ด้วยแสงเป็นผู้ผลิต"},
+  {t:"สิ่งมีชีวิตข้อใดจัดเป็นผู้ย่อยสลาย (decomposer)",c:["กวาง","ยีสต์/รา","ปลาหางนกยูง","สาหร่าย"],a:1,e:"ราและแบคทีเรียย่อยสลายซากสิ่งมีชีวิต"},
+  {t:"สัตว์ปีกมีลักษณะเด่นข้อใด",c:["มีปีก ขน และวางไข่เปลือกแข็ง","มีเกล็ดตลอดลำตัว","มีถุงลมและเหงือก","เลี้ยงลูกด้วยน้ำนม"],a:0,e:"นกมีขน ปีก วางไข่เปลือกแข็ง หายใจด้วยปอดและถุงลม"},
+  {t:"สัตว์น้ำที่หายใจด้วยเหงือกและมีครีบจัดเป็นกลุ่มใด",c:["ปลา","สัตว์ครึ่งบกครึ่งน้ำ","สัตว์เลื้อยคลาน","สัตว์ปีก"],a:0,e:"คุณสมบัติชัดเจนของปลาคือเหงือกและครีบ"},
+  {t:"ข้อใดถูกเกี่ยวกับผิวหนังของสัตว์เลื้อยคลาน",c:["ชื้นตลอดเวลา","มีเมือกมาก","แห้งและมีเกล็ด","ไม่มีเกล็ด"],a:2,e:"ผิวหนังแห้งมีเกล็ด เพื่อลดการคายน้ำ"},
+  {t:"ข้อใดเป็นตัวอย่าง ‘แพลงก์ตอนพืช’",c:["ยีสต์","ไดอะตอม","เห็ด","ฝุ่นละออง"],a:1,e:"ไดอะตอมเป็นสาหร่ายจิ๋วในน้ำ (phytoplankton)"},
+  {t:"ประโยชน์ของรากค้ำจุน/รากหายใจพบเด่นใน",c:["พืชน้ำจืดลอยน้ำ","พืชสวนกระถาง","พืชชายเลน เช่น โกงกาง/แสม","หญ้าทะเล"],a:2,e:"เพื่อค้ำจุนและช่วยหายใจในสภาพดินเลนขาดอากาศ"}
+];
+
+let player={name:"นักเรียน"};
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function startQuiz(){
+  const name=document.getElementById('playerName').value.trim();
+  player.name=name||"นักเรียน";
+  document.getElementById('welcome').style.display='none';
+  buildQuiz();
+}
+function buildQuiz(){
+  const box=document.getElementById('quizBox'); box.style.display='block'; box.innerHTML='';
+  const head=document.createElement('div'); head.className='footer';
+  head.innerHTML=`<span class="pill">ผู้ทำ: ${player.name}</span><span class="pill">รวมข้อ: ${QUESTIONS.length} ข้อ</span>`;
+  box.appendChild(head);
+  const qs=shuffle([...QUESTIONS]).map((q,i)=>({...q,id:i+1})); window.__quizOrder=qs;
+  qs.forEach((q,idx)=>{
+    const wrap=document.createElement('div'); wrap.className='q'; wrap.dataset.index=idx;
+    wrap.innerHTML=`<h3>ข้อที่ ${idx+1}. ${q.t}</h3>`;
+    const choices=document.createElement('div'); choices.className='choices';
+    q.c.forEach((text,ci)=>{
+      const btn=document.createElement('button'); btn.type='button'; btn.className='choice'; btn.textContent=`${ci+1}. ${text}`;
+      btn.addEventListener('click',()=>{[...choices.children].forEach(c=>c.classList.remove('selected')); btn.classList.add('selected'); wrap.dataset.selected=ci;});
+      choices.appendChild(btn);
+    });
+    wrap.appendChild(choices); box.appendChild(wrap);
+  });
+  const foot=document.createElement('div'); foot.className='footer';
+  const back=document.createElement('button'); back.className='btn-outline'; back.textContent='กลับหน้าแรก'; back.onclick=()=>{document.getElementById('quizBox').style.display='none';document.getElementById('welcome').style.display='flex';}
+  const submit=document.createElement('button'); submit.className='btn'; submit.textContent='ตรวจคำตอบ & สรุปคะแนน'; submit.onclick=gradeQuiz;
+  foot.append(back,submit); box.appendChild(foot);
+}
+function gradeQuiz(){
+  const qs=window.__quizOrder; let correct=0;
+  document.querySelectorAll('.q').forEach((wrap,idx)=>{
+    const sel=parseInt(wrap.dataset.selected); const q=qs[idx];
+    const exp=document.createElement('div'); exp.className='explain';
+    if(!Number.isInteger(sel)){exp.innerHTML='ยังไม่ได้เลือกคำตอบ'; wrap.appendChild(exp); return;}
+    const ok=(sel===q.a);
+    if(ok){correct++; exp.innerHTML='✓ ถูกต้อง — '+q.e; exp.style.color='var(--success)';}
+    else{exp.innerHTML=`✗ ไม่ถูก — เฉลยข้อ ${q.a+1}. ${q.c[q.a]} <br>${q.e}`; exp.style.color='var(--danger)';}
+    wrap.appendChild(exp);
+  });
+  const total=qs.length; const percent=Math.round(correct/total*100); const pass=percent>=80;
+  const res=document.getElementById('resultBox'); res.style.display='block';
+  res.innerHTML=`
+    <h2>สรุปคะแนนของ <span class="brand">${player.name}</span></h2>
+    <p class="big ${pass?'pass':'fail'}">${correct} / ${total} (${percent}%) — ${pass?'ผ่าน ✅':'ไม่ผ่าน ❌'}</p>
+    <p>เกณฑ์ผ่าน: 80% • ถ่ายภาพหน้าจอส่งครูได้เลย</p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">เลื่อนกลับไปดูเฉลยรายข้อ</button>
+      <button class="btn-outline" onclick="location.reload()">เริ่มใหม่</button>
+    </div>
+    <p style="margin-top:16px;color:var(--muted)">&copy; Kru Pai Classroom</p>
+  `;
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
